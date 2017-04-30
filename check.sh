@@ -34,7 +34,7 @@ if [ ! -d "$tmp" ]; then
   mkdir -p "$tmp"
 fi
 
-#check if database directory has prepared 
+#check if database directory has prepared
 if [ ! -d "../db" ]; then
   mkdir -p "../db"
 fi
@@ -61,7 +61,7 @@ echo google upload will not be used cause ~/uploader_credentials.txt do not exis
 fi
 
 #set url
-name=$(echo "KeePass")
+name=$(echo "Ditto")
 download=$(echo "https://sourceforge.net/projects/ditto-cp/rss?path=/Ditto")
 
 wget -S --spider -o $tmp/output.log "$download"
@@ -83,7 +83,7 @@ printf %s "$filelist" | while IFS= read -r url
 do {
 
 #calculate filename
-filename=$(echo $url | sed "s/\//\n/g" | grep "Ditto.*")
+filename=$(echo $url | sed "s/\//\n/g" | grep "zip\|exe")
 
 #check if this filename is in database
 grep "$filename" $db > /dev/null
@@ -96,14 +96,14 @@ wget $url -O $tmp/$filename -q
 
 #check downloded file size if it is fair enought
 size=$(du -b $tmp/$filename | sed "s/\s.*$//g")
-if [ $size -gt 512000 ]; then
+if [ $size -gt 256000 ]; then
 echo
 
 #detect version from url
-version=$(echo "$url" | sed "s/\//\n/g" | grep -v "[a-zA-Z]" | grep "[0-9]\+")
+version=$(echo "$url" | sed "s/\/\|%20/\n/g" | grep -v "[a-zA-Z]" | grep "[0-9]\+")
 
 #check if version matchs version pattern
-echo $version | grep "^[0-9]\+[\., ]\+[0-9]\+[\., ]\+[0-9]\+"
+echo $version | grep "^[0-9]\+"
 if [ $? -eq 0 ]; then
 echo
 
@@ -150,7 +150,7 @@ esac
 emails=$(cat ../posting | sed '$aend of file')
 printf %s "$emails" | while IFS= read -r onemail
 do {
-python ../send-email.py "$onemail" "$name $version $type" "$url 
+python ../send-email.py "$onemail" "$name $version $type" "$url
 $md5
 $sha1
 
@@ -162,11 +162,11 @@ echo
 
 else
 #version do not match version pattern
-echo version do not match version pattern
+echo version "$version" do not match version pattern
 emails=$(cat ../maintenance | sed '$aend of file')
 printf %s "$emails" | while IFS= read -r onemail
 do {
-python ../send-email.py "$onemail" "$name" "Version do not match version pattern: 
+python ../send-email.py "$onemail" "$name" "Version do not match version pattern:
 $url "
 } done
 fi
@@ -179,15 +179,15 @@ echo downloaded file size is to small
 emails=$(cat ../maintenance | sed '$aend of file')
 printf %s "$emails" | while IFS= read -r onemail
 do {
-python ../send-email.py "$onemail" "$name" "Downloaded file size is to small: 
-$url 
+python ../send-email.py "$onemail" "$name" "Downloaded file size is to small:
+$url
 $size"
 } done
 fi
 
 else
 #$filename is already in database
-echo $filename is already in database
+echo "$filename" is already in database
 fi
 
 rm -rf $tmp/*
@@ -200,7 +200,7 @@ echo only $links download links found
 emails=$(cat ../maintenance | sed '$aend of file')
 printf %s "$emails" | while IFS= read -r onemail
 do {
-python ../send-email.py "$onemail" "$name" "only $links download links found: 
+python ../send-email.py "$onemail" "$name" "only $links download links found:
 $download "
 } done
 fi
@@ -210,10 +210,10 @@ else
 emails=$(cat ../maintenance | sed '$aend of file')
 printf %s "$emails" | while IFS= read -r onemail
 do {
-python ../send-email.py "$onemail" "$name" "the following link do not retrieve good http status code: 
+python ../send-email.py "$onemail" "$name" "the following link do not retrieve good http status code:
 $url"
 } done
-echo 
+echo
 echo
 fi
 
