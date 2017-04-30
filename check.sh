@@ -150,11 +150,11 @@ esac
 emails=$(cat ../posting | sed '$aend of file')
 printf %s "$emails" | while IFS= read -r onemail
 do {
-python ../send-email.py "$onemail" "$name $version $type" "$url
+python ../send-email.py "$onemail" "$name $version $type" "$url 
 $md5
 $sha1
 
-https://drive.google.com/drive/folders/0B_3uBwg3RcdVQ1FQMmQ5SjlYZU0
+https://drive.google.com/drive/folders/0B_3uBwg3RcdVQ1FQMmQ5SjlYZU0 
 "
 } done
 echo
